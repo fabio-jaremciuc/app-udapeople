@@ -371,13 +371,13 @@ jobs:
       - run:
           name: Smoke test
           command: |
-            URL="http://udapeople-<< pipeline.parameters.workflow-id >>.s3-website-eu-west-3.amazonaws.com"
+            URL="http://udapeople-<< pipeline.parameters.workflow-id >>.s3-website-eu-east-2.amazonaws.com"
             echo $URL
-            if curl -s ${URL} | grep "Great Job"
+            if curl -s ${URL}
             then
-                return 1
-            else
                 return 0
+            else
+                return 1
             fi
       - run:
           name: Install AWS CLI for rollback
