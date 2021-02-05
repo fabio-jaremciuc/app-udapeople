@@ -362,7 +362,7 @@ jobs:
       - run:
           name: Backend smoke test
           command: |
-            if curl -s https://${BACKEND_URL}:3030/api/status
+            if curl -s http://${BACKEND_URL}:3030/api/status
             then
                 return 1
             else
@@ -371,7 +371,7 @@ jobs:
       - run:
           name: Smoke test
           command: |
-            URL="https://udapeople-<< pipeline.parameters.workflow-id >>.s3-website-us-east-2.amazonaws.com"
+            URL="http://udapeople-<< pipeline.parameters.workflow-id >>.s3-website-us-east-2.amazonaws.com"
             echo $URL
             if curl -s ${URL}
             then
@@ -436,14 +436,14 @@ workflows:
     jobs:
       - build-frontend
       - build-backend
-#      - test-frontend:
-#          requires: [build-frontend]
-#      - test-backend:
-#          requires: [build-backend]
-#      - scan-frontend:
-#          requires: [build-frontend]
-#      - scan-backend:
-#          requires: [build-backend]
+      - test-frontend:
+          requires: [build-frontend]
+      - test-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]
+      - scan-backend:
+          requires: [build-backend]
       - deploy-infrastructure:
           requires: [build-backend, build-frontend]
           filters:
