@@ -297,6 +297,7 @@ jobs:
             echo ENVIRONMENT=production > "frontend/.env"
             echo NODE_ENV=production >> "frontend/.env"
             echo API_URL=$API_URL >> "frontend/.env"
+            echo $API_URL
       - run:
           name: Build frontend
           command: |
@@ -366,7 +367,7 @@ jobs:
             then
                 return 1
             else
-                return 0
+                return 1
             fi
       - run:
           name: Smoke test
@@ -377,7 +378,7 @@ jobs:
             then
                 return 1
             else
-                return 0
+                return 1
             fi
       - run:
           name: Install AWS CLI for rollback
