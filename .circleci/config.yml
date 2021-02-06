@@ -283,23 +283,25 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-      - attach_workspace:
-          at: ~/
       - run:
           name: Install dependencies
           command: |
-            cd frontend
-            sudo npm install webpack-dev-server -g
-            sudo npm install
+            curl -sL https://rpm.nodesource.com/setup_lts.x | bash -
+            yum -y install nodejs
+            yum -y install tar gzip
+      - attach_workspace:
+          at: ~/
       - run:
           name: Get backend url
           command: |
             export BACKEND_IP=$(sed -n 2p .circleci/ansible/inventory.txt)
             export API_URL="http://${BACKEND_IP}:3030"
-            echo ENVIRONMENT=production > "frontend/.env"
-            echo NODE_ENV=production >> "frontend/.env"
-            echo API_URL=$API_URL >> "frontend/.env"
+            echo "API_URL=$API_URL" >> frontend/.env
             echo $API_URL
+            npm install webpack-dev-server -g
+            cd frontend
+            npm install
+            npm run build
       - run:
           name: Build frontend
           command: |
@@ -337,8 +339,10 @@ jobs:
             tar czf backend.tar.gz -P /home/circleci/project/backend/dist
       - run:
           name: Deploy ansible playbook
+          no_output_timeout: 30m
           command: |
-            export ANSIBLE_HOST_KEY_CHECKING=False
+            cd .circleci/ansible
+            cat ~/project/.circleci/ansible/inventory.txt
             ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/deploy.yml
       - run:
           name: Install AWS CLI
@@ -363,25 +367,21 @@ jobs:
           name: Get backend url
           command: |
             export BACKEND_URL=$(sed -n 2p .circleci/ansible/inventory.txt)
+            echo "${BACKEND_URL}"
       - run:
           name: Backend smoke test
+          no_output_timeout: 30m
           command: |
-            if curl -s http://${BACKEND_URL}:3030/api/status
-            then
-                return 1
-            else
-                return 0
-            fi
+            curl "http://${BACKEND_URL}:3030/api/status"
       - run:
           name: Smoke test
           command: |
             URL="http://udapeople-<< pipeline.parameters.workflow-id >>.s3-website-us-east-2.amazonaws.com"
-            echo $URL
-            if curl -s ${URL}
+            if curl -s ${URL} | grep "Welcome"
             then
-                return 1
+              return 0
             else
-                return 0
+              return 1
             fi
       - run:
           name: Install AWS CLI for rollback
