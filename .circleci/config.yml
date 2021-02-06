@@ -81,9 +81,6 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
-      - save_cache:
-          paths: [backend/dist]
-          key: backend-dist
       - slack/notify:
           event: fail
           template: basic_fail_1
@@ -341,19 +338,16 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update ansible openssh-client tar gzip 
-      - restore_cache:
-          keys: ["backend-dist"]
       - run:
           name: Deploy backend
           command: |
-            cd /home
-            tar czf backend.tar.gz -P /home/circleci/project/backend/dist
+            tar -C backend -czvf artifact.tar.gz .
+            ls -la
       - run:
           name: Deploy ansible playbook
           no_output_timeout: 30m
           command: |
-            export ANSIBLE_HOST_KEY_CHECKING=False
-            ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/deploy.yml
+            ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i /tmp/.circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
       - run:
           name: Install AWS CLI
           when: on_fail
@@ -364,46 +358,32 @@ jobs:
 
   smoke-test:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: python:3.7-alpine3.11 
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
-            apk add --update curl
-      - attach_workspace:
-          at: ~/
+            apk add --update tar gzip curl
       - run:
-          name: Get backend url
+          name: Backend smoke test
           command: |
             export BACKEND_URL=$(sed -n 2p .circleci/ansible/inventory.txt)
-      - run:
-          name: Backend smoke test.
-          command: |
-            if curl -s https://${BACKEND_URL}:3030/api/status
-            then
-            return 1
-            else
-            return 0
-            fi
+            URL="http://${BACKEND_URL}:3030/api/status"
+            echo $URL
+            curl $URL
       - run:
           name: Frontend smoke test.
           command: |
-            URL="http://udapeople-<< pipeline.parameters.workflow-id >>.s3-website-eu-west-3.amazonaws.com"
-            echo $URL
+            URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-west-2.amazonaws.com"
             if curl -s ${URL} | grep "Welcome"
             then
-            return 1
+              return 0
             else
-            return 0
+              return 1
             fi
-      - run:
-          name: Install AWS CLI for rollback
-          when: on_fail
-          command: |
-            apk add --update py3-pip && pip3 install --upgrade pip && pip3 install awscli
       - revert-migrations
-      - destroy-environment 
+      - destroy-environment
       
   cloudfront-update:
     docker:
