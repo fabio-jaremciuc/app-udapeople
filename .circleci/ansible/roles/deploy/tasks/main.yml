@@ -1,24 +1,16 @@
 ---
-
-- name: "Copy backend file"
-  unarchive:
+- name: Copy backend files
+  become: true
+  copy:
     src: /home/backend.tar.gz
-    dest: /home/ubuntu
+    dest: /home/ubuntu/backend.tar.gz
 
-- name: Stop PM2
-  ignore_errors: yes
+- name: Starting PM2
   shell: |
-    pm2 stop backend
-    pm2 delete backend
-    
-- name: Build node service
-  shell: |
-    cd /home/ubuntu/backend
-    npm i
-    npm audit fix --audit-level=critical --force
+    cd /home/ubuntu/
+    tar xzvf backend.tar.gz
+    cp home/circleci/project/backend .
+    cd backend
+    npm install
     npm run build
-      
-- name: Start pm2 service
-  shell: |
-    cd /home/ubuntu/backend
     pm2 start npm --name backend -- start
