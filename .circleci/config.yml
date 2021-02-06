@@ -263,10 +263,8 @@ jobs:
             cd backend 
             sudo npm install
             npm run build
-            sudo npm run migrations > migration.log
-            cat migration.log
-            migration_status=$(cat migration.log | grep -c "has been executed successfully")
-            if [ $migration_status > 0 ]; then exit 0; else exit 1; fi;
+            npm run migrations >> migration.txt
+            cat migration.txt
       - run:
           name: Send migration results to memstash
           command: |
@@ -374,9 +372,9 @@ jobs:
           command: |
             if curl -s https://${BACKEND_URL}:3030/api/status
             then
-            return 1
+              return 1
             else
-            return 0
+              return 0
             fi
       - run:
           name: Frontend smoke test.
