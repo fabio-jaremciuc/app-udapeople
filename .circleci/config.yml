@@ -240,7 +240,8 @@ jobs:
           when: on_fail
           command: |
             apk add --update py3-pip && pip3 install --upgrade pip && pip3 install awscli
-          
+      - destroy-environment
+      
   run-migrations:
     docker:
       - image: circleci/node:13.8.0
@@ -290,27 +291,28 @@ jobs:
             sudo npm install webpack-dev-server -g
             sudo npm install
       - run:
-          name: Backend url
+          name: Get backend url
           command: |
             export BACKEND_IP=$(sed -n 2p .circleci/ansible/inventory.txt)
             export API_URL="http://${BACKEND_IP}:3030"
             echo ENVIRONMENT=production > "frontend/.env"
             echo NODE_ENV=production >> "frontend/.env"
             echo API_URL=$API_URL >> "frontend/.env"
+            echo $API_URL
       - run:
           name: Build frontend
           command: |
-            sudo npm install webpack-dev-server -g
             cd frontend
-            sudo npm i
-            sudo npm run build
+            ls -la
+            cat .env
+            npm run build
       - aws-cli/setup
       - run:
           name: Deploy frontend objects
           command: |
-            aws s3 cp frontend/dist "s3://udapeople-<< pipeline.parameters.workflow-id >>" --recursive 
+            aws s3 cp --recursive frontend/dist "s3://udapeople-<< pipeline.parameters.workflow-id >>"
       - revert-migrations
-      - destroy-environment
+      - destroy-environment   
                 
   deploy-backend:
     docker:
