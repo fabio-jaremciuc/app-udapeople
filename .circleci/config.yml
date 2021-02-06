@@ -347,7 +347,7 @@ jobs:
           name: Deploy ansible playbook
           no_output_timeout: 30m
           command: |
-            ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i /tmp/.circleci/ansible/inventory.txt .circleci/ansible/deploy.yml
+            ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/deploy.yml
       - run:
           name: Install AWS CLI
           when: on_fail
