@@ -304,7 +304,11 @@ jobs:
             cd frontend
             sudo npm i
             sudo npm run build
-            aws s3 cp frontend/dist "s3://udapeople-<< pipeline.parameters.workflow-id >>" --recursive
+      - aws-cli/setup
+      - run:
+          name: Deploy frontend objects
+          command: |
+            aws s3 cp frontend/dist "s3://udapeople-<< pipeline.parameters.workflow-id >>" --recursive 
       - revert-migrations
       - destroy-environment
                 
