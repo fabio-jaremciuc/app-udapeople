@@ -2,7 +2,7 @@
 
 - name: "Copy backend file"
   unarchive:
-    src: ~/project/backend.tar.gz
+    src: /home/backend.tar.gz
     dest: /home/ubuntu
 
 - name: Stop PM2
