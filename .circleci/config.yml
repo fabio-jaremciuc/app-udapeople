@@ -283,12 +283,6 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-      - run:
-          name: Install dependencies
-          command: |
-            curl -sL https://rpm.nodesource.com/setup_lts.x | bash -
-            yum -y install nodejs
-            yum -y install tar gzip
       - attach_workspace:
           at: ~/
       - run:
@@ -341,8 +335,6 @@ jobs:
           name: Deploy ansible playbook
           no_output_timeout: 30m
           command: |
-            cd .circleci/ansible
-            cat ~/project/.circleci/ansible/inventory.txt
             ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/deploy.yml
       - run:
           name: Install AWS CLI
