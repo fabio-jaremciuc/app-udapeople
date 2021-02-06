@@ -1,0 +1,14 @@
+[URL01]
+https://github.com/fabio-jaremciuc/app-udapeople
+
+[URL02]
+http://udapeople-ca2a5ff.s3-website.us-east-2.amazonaws.com/#/employees
+
+[URL03]
+http://d1wckpn3wqtmv0.cloudfront.net/#/employees
+
+[URL04]
+http://ec2-3-17-181-248.us-east-2.compute.amazonaws.com:3030/api/status
+
+[URL05]
+http://ec2-3-139-82-147.us-east-2.compute.amazonaws.com:9090/graph

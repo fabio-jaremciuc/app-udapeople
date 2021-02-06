@@ -13,5 +13,5 @@ Project: Give Your Application Auto-Deploy Superpowers
 8. [Successful promotion job](images/SCREENSHOT08.png)
 9. [Successful cleanup job](images/SCREENSHOT09.png)
 10. Pushed from branch: [develop](images/SCREENSHOT10_develop.png), [master 1](images/SCREENSHOT10_master.png), [master 2](images/SCREENSHOT10_master_2.png) and [master 3](images/SCREENSHOT10_master_3.png)
-11. [Provide a screenshot of a graph of your EC2 instance including available memory, available disk space, and CPU usage](images/SCREENSHOT11.png)
-12. [Provide a screenshot of an alert that was sent by Prometheus.](images/SCREENSHOT12.png)
+11. Provide a screenshot of a graph of your EC2 instance including available [memory](images/SCREENSHOT11.png), available [disk space](images/SCREENSHOT11_disk_read.png), and [CPU usage](images/SCREENSHOT11_cpu.png)
+12. Provide a screenshot of an alert that was sent by Prometheus: [hosts](images/SCREENSHOT12_targets.png) and [alert](images/SCREENSHOT12_alert.png)
