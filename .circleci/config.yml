@@ -344,6 +344,7 @@ jobs:
           name: Install AWS CLI
           when: on_fail
           command: |
+            export ANSIBLE_HOST_KEY_CHECKING=False
             apk add --update py3-pip && pip3 install --upgrade pip && pip3 install awscli
       - revert-migrations
       - destroy-environment
