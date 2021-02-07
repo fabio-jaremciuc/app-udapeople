@@ -29,7 +29,7 @@ commands:
               npm run migrations:revert
               echo "Migration reverted"
             fi
-            
+           
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     steps:
@@ -40,6 +40,7 @@ commands:
             aws s3 rm s3://udapeople-<< pipeline.parameters.workflow-id >> --recursive 
             aws cloudformation delete-stack --stack-name "udapeople-backend-<< pipeline.parameters.workflow-id >>"
             aws cloudformation delete-stack --stack-name "udapeople-frontend-<< pipeline.parameters.workflow-id >>"
+
 jobs:
   build-frontend:
     docker:
@@ -443,16 +444,16 @@ workflows:
     jobs:
       - build-frontend
       - build-backend
-#      - test-frontend:
-#          requires: [build-frontend]
-#      - test-backend:
-#          requires: [build-backend]
-#      - scan-frontend:
-#          requires: [build-frontend]
-#      - scan-backend:
-#          requires: [build-backend]
+      - test-frontend:
+          requires: [build-frontend]
+      - test-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]
+      - scan-backend:
+          requires: [build-backend]
       - deploy-infrastructure:
-          requires: [build-backend, build-frontend]
+          requires: [test-backend, test-frontend]
           filters:
             branches:
               only: [main]
